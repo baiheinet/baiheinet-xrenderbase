@@ -631,6 +631,7 @@
   "Current collection": "Current collection",
   "Other collections": "Other collections",
   "Current popup record": "Current popup record",
+  "Parent popup record": "Parent popup record",
   "Associated records": "Associated records",
   "Parent record": "Parent record",
   "Current time": "Current time",
@@ -829,5 +830,6 @@
   "This variable has been deprecated and can be replaced with \"Current form\"": "This variable has been deprecated and can be replaced with \"Current form\"",
   "The value of this variable is derived from the query string of the page URL. This variable can only be used normally when the page has a query string.": "The value of this variable is derived from the query string of the page URL. This variable can only be used normally when the page has a query string.",
   "URL search params": "URL search params",
-  "Expand All": "Expand All"
+  "Expand All": "Expand All",
+  "Search": "Search"
 }

@@ -11,9 +11,10 @@ import { CheckOutlined, EnvironmentOutlined, ExpandOutlined } from '@ant-design/
 import { RecursionField, useFieldSchema } from '@formily/react';
 import {
   ActionContextProvider,
-  DeclareVariable,
   RecordProvider,
+  VariablePopupRecordProvider,
   css,
+  getLabelFormatValue,
   useCollection,
   useCollectionManager_deprecated,
   useCollectionParentRecordData,
@@ -48,7 +49,8 @@ export const AMapBlock = (props) => {
   const [, setPrevSelected] = useState<any>(null);
   const selectingModeRef = useRef(selectingMode);
   selectingModeRef.current = selectingMode;
-
+  const { fields } = useCollection();
+  const labelUiSchema = fields.find((v) => v.name === fieldNames?.marker)?.uiSchema;
   const setOverlayOptions = (overlay: AMap.Polygon | AMap.Marker, state?: boolean) => {
     const extData = overlay.getExtData();
     const selected = typeof state === 'undefined' ? extData.selected : !state;
@@ -133,6 +135,7 @@ export const AMapBlock = (props) => {
     const overlays = dataSource
       .map((item) => {
         const data = getSource(item, fieldNames?.field, cf?.interface)?.filter(Boolean);
+        const title = getLabelFormatValue(labelUiSchema, item[fieldNames.marker]);
         if (!data?.length) return [];
         return data.map((mapItem) => {
           const overlay = mapRef.current?.setOverlay(collectionField.type, mapItem, {
@@ -142,7 +145,7 @@ export const AMapBlock = (props) => {
             label: {
               direction: 'bottom',
               offset: [0, 5],
-              content: fieldNames?.marker ? compile(item[fieldNames.marker]) : undefined,
+              content: fieldNames?.marker ? compile(title) : undefined,
             },
             extData: {
               id: item[primaryKey],
@@ -342,14 +345,9 @@ const MapBlockDrawer = (props) => {
     schema && (
       <ActionContextProvider value={{ visible: !!record, setVisible }}>
         <RecordProvider record={record} parent={parentRecordData}>
-          <DeclareVariable
-            name="$nPopupRecord"
-            title={t('Current popup record')}
-            value={record}
-            collection={collection}
-          >
+          <VariablePopupRecordProvider recordData={record} collection={collection}>
             <RecursionField schema={schema} name={schema.name} />
-          </DeclareVariable>
+          </VariablePopupRecordProvider>
         </RecordProvider>
       </ActionContextProvider>
     )

@@ -15,9 +15,10 @@ import { reaction } from '@formily/reactive';
 import { uid } from '@formily/shared';
 import { getValuesByPath } from '@nocobase/utils/client';
 import { ConfigProvider, Spin, theme } from 'antd';
+import _ from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { useActionContext } from '..';
-import { useAttach, useComponent } from '../..';
+import { useAttach, useComponent, useDesignable } from '../..';
 import { useTemplateBlockContext } from '../../../block-provider/TemplateBlockProvider';
 import { withDynamicSchemaProps } from '../../../hoc/withDynamicSchemaProps';
 import { ActionType } from '../../../schema-settings/LinkageRules/type';
@@ -45,21 +46,20 @@ const FormComponent: React.FC<FormProps> = (props) => {
   const f = useAttach(form.createVoidField({ ...field.props, basePath: '' }));
   const height = useFormBlockHeight();
   const { token } = theme.useToken();
-
+  const { designable } = useDesignable();
   return (
     <FieldContext.Provider value={undefined}>
       <FormContext.Provider value={form}>
         <FormLayout layout={'vertical'} {...others}>
           <div
             className={css`
-              .nb-grid {
+              .nb-grid-container {
                 height: ${height ? height + 'px' : '100%'};
                 overflow-y: auto;
-                .nb-grid-warp {
-                  width: 100%;
-                  overflow-x: clip;
-                  padding-right: ${token.paddingSM + 'px'};
-                }
+                margin-left: -${token.marginLG}px;
+                margin-right: -${token.marginLG}px;
+                padding-left: ${token.marginLG}px;
+                padding-right: ${token.marginLG}px;
               }
             `}
           >
@@ -181,7 +181,7 @@ const WithForm = (props: WithFormProps) => {
                     return result;
                   },
                   getSubscriber(action, field, rule, variables, localVariables),
-                  { fireImmediately: true },
+                  { fireImmediately: true, equals: _.isEqual },
                 ),
               );
             });

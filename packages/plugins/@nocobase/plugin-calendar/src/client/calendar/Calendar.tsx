@@ -11,8 +11,9 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { RecursionField, Schema, observer, useFieldSchema } from '@formily/react';
 import {
   ActionContextProvider,
-  DeclareVariable,
   RecordProvider,
+  VariablePopupRecordProvider,
+  getLabelFormatValue,
   useCollection,
   useCollectionParentRecordData,
   useProps,
@@ -62,6 +63,8 @@ function Toolbar(props: ToolbarProps) {
 
 const useEvents = (dataSource: any, fieldNames: any, date: Date, view: (typeof Weeks)[number]) => {
   const { t } = useTranslation();
+  const { fields } = useCollection();
+  const labelUiSchema = fields.find((v) => v.name === fieldNames?.title)?.uiSchema;
   return useMemo(() => {
     if (!Array.isArray(dataSource)) return [];
     const events = [];
@@ -105,10 +108,10 @@ const useEvents = (dataSource: any, fieldNames: any, date: Date, view: (typeof W
         });
 
         if (res) return out;
-
+        const title = getLabelFormatValue(labelUiSchema, get(item, fieldNames.title), true);
         const event = {
           id: get(item, fieldNames.id || 'id'),
-          title: get(item, fieldNames.title) || t('Untitle'),
+          title: title || t('Untitle'),
           start: eventStart.toDate(),
           end: eventStart.add(intervalTime, 'millisecond').toDate(),
         };
@@ -183,14 +186,9 @@ const CalendarRecordViewer = (props) => {
       <DeleteEventContext.Provider value={{ close }}>
         <ActionContextProvider value={{ visible, setVisible }}>
           <RecordProvider record={record} parent={parentRecordData}>
-            <DeclareVariable
-              name="$nPopupRecord"
-              title={t('Current popup record')}
-              value={record}
-              collection={collection}
-            >
+            <VariablePopupRecordProvider recordData={record} collection={collection}>
               <RecursionField schema={eventSchema} name={eventSchema.name} />
-            </DeclareVariable>
+            </VariablePopupRecordProvider>
           </RecordProvider>
         </ActionContextProvider>
       </DeleteEventContext.Provider>
